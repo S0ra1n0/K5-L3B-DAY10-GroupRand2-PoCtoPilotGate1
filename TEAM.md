@@ -14,7 +14,7 @@ Họ tên đầy đủ và MSSV của **mọi** thành viên; bàn 3 người th
 | STT | Họ và tên | MSSV | Vai | Trưởng nhóm |
 | --: | --------- | ---- | --- | :---------: |
 |   1 | Nguyễn Lê Đăng Khoa | 2A202603847 | Kỹ sư cổng |        x     |
-|   2 |           |      |     |             |
+|   2 | Đào Thị Ngọc Ánh | 2A202603790 | Sản phẩm và kinh doanh |             |
 |   3 |  Nguyễn Minh Quang   |  2A202603791    | Kỹ sư cổng    |             |
 |   4 | Nguyễn Ngọc Quang | 2A202603773 | Vận hành và pháp lý |             |
 
@@ -142,3 +142,45 @@ Một điều học được, một điều còn chưa chắc.
 
 - **Một điều học được:** cổng con số và con người (người duyệt, điều kiện dừng, phạm vi pilot) quan trọng ngang cổng code; report cho phép "Tiếp tục" chưa có nghĩa là nên mở rộng khi độ phủ chỉ khoảng 38%.
 - **Một điều còn chưa chắc:** với 1 người trực, 6 ca/giờ, hàng chờ có đủ khi tracking thật hay thiếu ngày giao làm tỉ lệ chuyển người duyệt tăng vượt 0,25 không.
+
+## DaoThiNgocAnh-2A202603790
+
+### Phần việc phụ trách
+
+- **Vai:** Sản phẩm và kinh doanh.
+- **File chính phụ trách:** `config/acceptance_criteria.json` (soạn ngưỡng trước khi ký), `config/operating_gates.json` mục `business`.
+- **Mục phiếu phụ trách:**
+  - Vòng 1: Phiếu A mục A1 (câu 1.1, mục tiêu cấp hệ thống) và A4 (câu 1.6, Bản tiêu chí, ranh giới đầu ra, bốn câu soát); Phiếu B mục B3 (câu 2.3, bản đồ dữ liệu và ví dụ drift), mục B7.4 (câu 2.9, cổng kinh doanh), lăng kính Kinh doanh của pre-mortem B6 (câu 2.5).
+  - Vòng 2: Phiếu C mục C5 (câu 3.2, specification). Quyết định v2 (C12) do cả bàn chốt.
+
+### Đóng góp cụ thể
+
+1. **Vòng 1:**
+   - Viết mục tiêu cấp hệ thống và Bản tiêu chí: 5 ngưỡng bắt buộc, 1 ngưỡng nên có, nhóm `business_ops` (chi phí ≤ 7.500đ/ticket, ROI ≥ 0,3, 0 ca ùn) và bốn dòng `decision_rule`, để bàn ký trước lần đánh giá đầu tiên.
+   - Lập bản đồ dữ liệu của trợ lý (B3): tách nguồn sự thật (tracking, chính sách, `ops_limits`) với lời khai trong ticket; chỉ ra ví dụ drift `REFUND-v3` → `REFUND-v4` ngày 2026-12-01, là drift quan hệ vào–ra (concept drift). Đây là cơ sở cho cổng "ghim đúng phiên bản chính sách".
+   - Đặt cổng kinh doanh (B7.4) bằng số từ `data/world.json`: trần hoàn tự động 2.000.000đ/ngày (ngân sách Finance), ngân sách LLM 1.500đ/ticket, ROI tối thiểu 0,3, phạm vi pilot HN + CT. Đã chạy thử hai phương án phạm vi trước khi chọn.
+2. **Vòng 2 (thẻ S1):**
+   - Viết specification cho tác hại trên thẻ (C5): chỉ tự ghi lỗi hãng khi số ngày trễ lấy từ tracking, kiện có ngày giao thật, và hãng chưa đủ 2 lỗi tự động trong ngày.
+   - Phần `business` của câu 3.5 (C7 dòng [3]): đọc khối "theo kho và hãng", thấy tác hại dồn vào kho CT, nên thu `pilot_scope` còn `["HN"]`. Ghi rõ đây là biện pháp GIẢM (giới hạn thiệt hại), không NGĂN.
+   - Sau khi cổng code vòng 2 xong, thử mở lại CT và phát hiện bộ đếm lỗi hãng chỉ thấy lỗi trong phạm vi pilot (5 lỗi oan cho GHSH). Đưa kết quả này cho bàn làm bằng chứng giữ phạm vi HN khi chốt quyết định v2 (**Thu hẹp**, chỉ kho HN).
+3. **Sử dụng AI:** có dùng Claude (Claude Code) để đọc đề, đọc code `lab10/` và `data/world.json`, chạy lệnh `lab10.eval` / `lab10.grade` / `lab10.trace`, soạn nháp các câu 2.3, 2.9, 3.2, 3.5 (phần `business`), và commit / push. Tôi đã đọc lại, chỉnh câu chữ, và chịu trách nhiệm về các con số và quyết định trong phần của mình.
+
+### Bằng chứng
+
+- **Mã commit Git:**
+  - `0654b17`: `San pham va kinh doanh: Phieu A`
+  - `f6a127c`: `Phieu A: cap nhat tieu chi va them tai lieu docs_day09`
+  - `a4835c9`, `a5bf4ef`: Phiếu B mục B3 (câu 2.3)
+  - `38112ff`: Phiếu B mục B7.4 và `config/operating_gates.json` mục `business` (câu 2.9)
+  - `1e863b8`: Phiếu C câu 3.2 và câu 3.5 phần `business` (`pilot_scope` chỉ HN)
+- **Mã lần chạy (`runs/<mã>`):**
+  - Chọn phạm vi vòng 1: `R-base-after-20261119-164209-ccc680` (4 kho lẻ), `R-base-after-20261119-164219-370407` (HN + CT: pass_rate 1,0, chi phí 4.723đ, ROI 1,12)
+  - Thu phạm vi còn HN ở vòng 2: `R-S1-after-20261119-172040-48b9b4`, bộ nền `R-base-after-20261119-172041-48b9b4`
+  - Thử mở lại CT sau khi có cổng code: `R-S1-after-20261119-210256-f21e60` (5 lỗi oan, pass_rate 0,875)
+  - Kiểm lại phạm vi HN với cổng code vòng 2: grade `R-S1-grade-20261119-215343-e088fa` (S1 pass_rate 1,0, lỗi oan 0, ROI 0,51)
+- **Dòng trong phiếu:** Phiếu A mục A1 (câu 1.1), A4 (câu 1.6); Phiếu B mục B3, B7.4; Phiếu C mục C5 (câu 3.2), C7 dòng [3].
+
+### Exit ticket
+
+- **Một điều học được:** Phải viết luật trước khi nhìn số. Trợ lý đúng 110/110 lần trên bộ nền mà bàn vẫn không chọn Tiếp tục, vì Bản tiêu chí đã ký đòi đạt cả trên gói sự cố. Và chi phí mỗi ticket chủ yếu là tiền người duyệt (mỗi ca chuyển người 10.000đ, bằng làm tay), không phải tiền LLM, nên tỉ lệ chuyển người quyết định ROI.
+- **Một điều còn chưa chắc:** Thu hẹp còn mỗi kho HN thì độ phủ chỉ khoảng 36–38% và tỉ lệ chuyển người đã chạm trần 0,25. Tôi chưa chắc pilot nhỏ như vậy có đủ số ca để đo đáng tin trước Bước đánh giá 2 không, và chưa rõ cần làm sổ lỗi hãng chung (gồm cả lỗi ghi tay, tính theo 7 ngày) thế nào để mở lại CT an toàn.
