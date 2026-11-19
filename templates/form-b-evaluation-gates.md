@@ -254,11 +254,14 @@ Bốn lăng kính (bắt buộc đủ cả bốn; dự án AI hay chết ở ba 
 
 | Lý do thất bại (viết ở thì quá khứ) | Lăng kính | Kiểm được hôm nay? (trace / data / config nào) | Thành cổng phòng ngừa nào (code hay config) / hay vào risk register |
 |---|---|---|---|
-| | Kỹ thuật | | |
-| | Kinh doanh | | |
-| | Con người và vận hành | | |
-| | Pháp lý | | |
-| | | | |
+| Trợ lý đã tin lời khách tự khai trong ticket đè lên dữ liệu tracking DB (`model_override`), dẫn đến hoàn tiền sai quy định và phạt oan đối tác vận chuyển. | Kỹ thuật | Có: trace `T-002@55` (sự kiện `03 model_override`), report mốc base hoàn sai 20.000đ. | Thành cổng code: `write_gate` trong `guards.py` kiểm tra chéo `db_delay_days` và `entitlement_vnd` từ `helpers.py`. |
+| Trợ lý đã tự động duyệt hoàn tiền theo chính sách cũ hoặc sai phiên bản khi sang tháng 12/2026 (`REFUND-v4`), hoàn sai cho các ca bất khả kháng mà không biết chính sách mới đã bỏ điều khoản này. | Kỹ thuật | Có: `data/world.json` phần `policies` (`REFUND-v3` hết hạn 2026-11-30, `REFUND-v4` hiệu lực từ 2026-12-01). | Thành cổng code: `pre_guard` trong `guards.py` kiểm tra và ghim chính sách hiệu lực theo ngày (`effective_policy`). |
+| Trợ lý đã tự động hoàn tiền không giới hạn trong ngày bão/khuyến mãi, làm tổng tiền bồi hoàn vượt quá ngân sách 2.000.000đ/ngày của Finance, gây thâm hụt tài chính nghiêm trọng. | Kinh doanh | Có: `data/world.json` mục `ops_limits.daily_auto_refund_budget_vnd`, report dòng `tổng hoàn tự động một ngày`. | Thành cổng config: `business.daily_refund_cap_vnd = 2000000` trong `config/operating_gates.json`. |
+| Trợ lý đã tự động xử lý cả đơn hàng sỉ giá trị lớn ở kho `HCM-B2B` (> 2 triệu đồng/đơn), làm số tiền bồi hoàn vượt trần và chi phí vận hành trợ lý cao hơn làm tay. | Kinh doanh | Có: `data/world.json` mục `warehouses` (kho `HCM-B2B`), report dòng phân khúc kho `?` có chi phí > làm tay. | Thành cổng config: `business.pilot_scope` (chỉ chạy ở kho đơn lẻ, loại trừ `HCM-B2B`). |
+| Lượng ticket dồn dập vào giờ cao điểm làm hàng chờ chuyển người vượt quá công suất 6 ca/giờ của 1 nhân viên trực, khiến ca cuối chờ quá SLA 60 phút và khách hàng bị bỏ rơi. | Con người và vận hành | Có: `data/world.json` mục `ops_limits.review_sla_minutes = 60`, report dòng `hàng chờ người duyệt` và `số ca bị ùn`. | Thành cổng config & runbook: `operations.max_queue_wait_minutes = 60` + Runbook điều động thêm nhân sự khi hàng chờ > 4 ca. |
+| Trợ lý đưa ra quyết định tự động nhưng không kèm ghi chú giải thích và không đứng tên trưởng ca NV-HANH, khiến nhân viên CSKH mất niềm tin và tự kiểm lại 100% bằng tay làm tê liệt vận hành. | Con người và vận hành | Có: `data/world.json` mục `staff_behavior.trust_conditions`, `ops_facts.recheck_with_note_units = 0.4`. | Thành cổng config: `operations.decision_note = true` và `approver_id = "NV-HANH"`. |
+| Trợ lý đã tự động ghi lỗi và phạt oan hãng giao hàng (như GHSH 12 tài xế) cho các đơn trễ do thiên tai, khiến hãng bị phạt 150.000đ/lỗi và bị đình chỉ hợp tác sau 3 strike/tuần, dẫn đến kiện tụng. | Pháp lý | Có: `data/world.json` mục `carriers.GHSH` (`suspend_after_strikes_7d: 3`), trace `T-002@55`. | Thành cổng code: `write_gate` chặn `file_carrier_fault` nếu tracking không có `CARRIER` + Config `legal.carrier_fault_requires_recorded_cause = true`. |
+| Trợ lý đã sao chép nguyên văn ghi chú ticket của khách (chứa họ tên, số điện thoại, địa chỉ nhà) vào thông báo gửi cho hãng vận chuyển, làm rò rỉ dữ liệu cá nhân (PII) của người nhận quà. | Pháp lý | Có: `data/world.json` mục `policies.carrier_notice_fields`, trace `T-002@55` lệnh `08 tool notify_carrier`. | Thành cổng code & config: `write_gate` lọc bỏ PII trong `notify_carrier` + Config `legal.pii_fields_blocked_to_third_party`. |
 
 ---
 
