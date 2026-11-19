@@ -2,10 +2,10 @@
 
 *Đây là kết quả TỰ KIỂM TRA của bàn, không phải điểm. Bài được một team chấm tự động chấm lại sau buổi học.*
 
-- Mã lần chạy: `R-S1-grade-20261119-215855-a25689` · bàn: `Rand2` · grader `lab10-1.0` · 0.128s
-- Ba mốc: base `R-S1-before-20261119-215855-a25689` · prepared `R-S1-prepared-20261119-215855-a25689` · after `R-S1-after-20261119-215855-a25689` (report + trace trong runs/)
+- Mã lần chạy: `R-S1-grade-20261119-222152-2a0891` · bàn: `Rand2` · grader `lab10-1.0` · 0.116s
+- Ba mốc: base `R-S1-before-20261119-222152-2a0891` · prepared `R-S1-prepared-20261119-222152-2a0891` · after `R-S1-after-20261119-222152-2a0891` (report + trace trong runs/)
 - Mốc prepared (cổng vòng 1): đã chốt `b3335012`, còn nguyên
-- Hash code đội (guards + monitors + switches + cổng vận hành): `a25689e11121`
+- Hash code đội (guards + monitors + switches + cổng vận hành): `2a0891e41769`
 - Hash Bản tiêu chí chấp nhận: `ababbcfc35ae` · đã ký: `ababbcfc35ae` · KHÔNG ĐỔI
 - Thẻ đang kiểm: `S1` · dòng "Thẻ đã bốc" bàn ghi trong phiếu: S1 · khớp
 
@@ -16,7 +16,7 @@
 | 3 visible | ✅ | base có vấn đề: True; after sạch: True; ticket còn hỏng: không; trần còn vượt: không |
 | 4 hidden | — | máy này không có bài kiểm tra ẩn (team chấm sẽ chạy sau buổi học) |
 | 5 regression | ✅ | bộ nền pass_rate 0.9909 → 1.0; ca mới hỏng: không |
-| 6 monitor | ✅ | metric mới: ['model_override_delay_rate', 'carrier_fault_rate']; sáng đèn: [('model_override_delay_rate', 'before', 0.0455, 0.4615), ('model_override_delay_rate', 'after', 0.025, 0.6), ('carrier_fault_rate', 'before', 0.5091, 0.8462), ('carrier_fault_rate', 'after', 0.375, 0.8)] |
+| 6 monitor | ✅ | metric mới: ['model_override_delay_rate', 'carrier_fault_rate']; sáng đèn: [('model_override_delay_rate', 'before', 0.0455, 0.4615), ('carrier_fault_rate', 'before', 0.5091, 0.8462), ('carrier_fault_rate', 'after', 0.375, 0.8)] |
 
 **Kinh doanh · vận hành · pháp lý trên gói sự cố bàn nhìn thấy** (tiền tính cho một ngày giả lập)
 
@@ -28,10 +28,10 @@
 | số ca bị ùn | 0 | 0 | 0 |
 | số người trực · ca duyệt được mỗi giờ | 1 · 6 | 1 · 6 | 1 · 6 |
 | nhân viên kiểm lại quyết định tự động (%) | 0 | 0 | 0 |
-| chi phí mỗi ticket (đ) · làm tay | 2964 · 10000 | 5626 · 10000 | 6644 · 10000 |
-| tiền LLM ticket đắt nhất (đ) · trần | 669 · 1500 | 665 · 1500 | 666 · 1500 |
-| tiết kiệm ròng mỗi ngày (đ) | -105531 | 12995 | 16781 |
-| ROI | -2.74 | 0.29 | 0.51 |
+| chi phí mỗi ticket (đ) · làm tay | 2964 · 10000 | 5626 · 10000 | 6650 · 10000 |
+| tiền LLM ticket đắt nhất (đ) · trần | 669 · 1500 | 665 · 1500 | 677 · 1500 |
+| tiết kiệm ròng mỗi ngày (đ) | -105531 | 12995 | 16750 |
+| ROI | -2.74 | 0.29 | 0.5 |
 | tổng hoàn tự động một ngày (đ) · ngân sách | 110000 · 2000000 | 42000 · 2000000 | 30000 · 2000000 |
 | tiền hoàn sai ngày tệ nhất (đ) · ngân sách | 197000 · 2000000 | 22000 · 2000000 | 0 · 2000000 |
 | độ phủ pilot (phần ticket trợ lý xử lý) | 1.0 | 0.6154 | 0.3846 |
@@ -46,7 +46,7 @@
 | kho CT | pass 0.0; hoàn sai 275000; oan 15; PII 0; chi phí 662đ | pass 0.3333; hoàn sai 110000; oan 10; PII 0; chi phí 3962đ | — |
 | kho DN | pass 0.0; hoàn sai 120000; oan 5; PII 0; chi phí 664đ | — | — |
 | kho HCM | pass 0.3333; hoàn sai 100000; oan 5; PII 0; chi phí 633đ | — | — |
-| kho HN | pass 0.6; hoàn sai 490000; oan 5; PII 0; chi phí 664đ | pass 0.8; hoàn sai 0; oan 0; PII 0; chi phí 624đ | pass 1.0; hoàn sai 0; oan 0; PII 0; chi phí 644đ |
+| kho HN | pass 0.6; hoàn sai 490000; oan 5; PII 0; chi phí 664đ | pass 0.8; hoàn sai 0; oan 0; PII 0; chi phí 624đ | pass 1.0; hoàn sai 0; oan 0; PII 0; chi phí 650đ |
 | hãng DNB | pass 0.0; hoàn sai 120000; oan 0; PII 0 | — | — |
 | hãng GHSH | pass 0.3636; hoàn sai 865000; oan 30; PII 0 | pass 0.625; hoàn sai 110000; oan 10; PII 0 | pass 1.0; hoàn sai 0; oan 0; PII 0 |
 | hãng VNX | pass 0.0; hoàn sai 0; oan 0; PII 0 | — | — |
@@ -61,9 +61,9 @@
 | số ca bị ùn | 0 | 0 | 0 |
 | số người trực · ca duyệt được mỗi giờ | 1 · 6 | 1 · 6 | 1 · 6 |
 | nhân viên kiểm lại quyết định tự động (%) | 0 | 0 | 0 |
-| chi phí mỗi ticket (đ) · làm tay | 4203 · 10000 | 4723 · 10000 | 6789 · 10000 |
-| tiền LLM ticket đắt nhất (đ) · trần | 670 · 1500 | 670 · 1500 | 670 · 1500 |
-| tiết kiệm ròng mỗi ngày (đ) | 123542 | 63328 | 25687 |
+| chi phí mỗi ticket (đ) · làm tay | 4203 · 10000 | 4723 · 10000 | 6790 · 10000 |
+| tiền LLM ticket đắt nhất (đ) · trần | 670 · 1500 | 670 · 1500 | 672 · 1500 |
+| tiết kiệm ròng mỗi ngày (đ) | 123542 | 63328 | 25677 |
 | ROI | 1.34 | 1.12 | 0.47 |
 | tổng hoàn tự động một ngày (đ) · ngân sách | 155000 · 2000000 | 155000 · 2000000 | 155000 · 2000000 |
 | tiền hoàn sai ngày tệ nhất (đ) · ngân sách | 20000 · 2000000 | 0 · 2000000 | 0 · 2000000 |
@@ -80,7 +80,7 @@
 | kho CT | pass 1.0; hoàn sai 0; oan 0; PII 0; chi phí 590đ | pass 1.0; hoàn sai 0; oan 0; PII 0; chi phí 590đ | — |
 | kho DN | pass 1.0; hoàn sai 0; oan 0; PII 0; chi phí 4586đ | — | — |
 | kho HCM | pass 0.96; hoàn sai 20000; oan 1; PII 0; chi phí 2571đ | — | — |
-| kho HN | pass 1.0; hoàn sai 0; oan 0; PII 0; chi phí 1993đ | pass 1.0; hoàn sai 0; oan 0; PII 0; chi phí 1993đ | pass 1.0; hoàn sai 0; oan 0; PII 0; chi phí 1993đ |
+| kho HN | pass 1.0; hoàn sai 0; oan 0; PII 0; chi phí 1993đ | pass 1.0; hoàn sai 0; oan 0; PII 0; chi phí 1993đ | pass 1.0; hoàn sai 0; oan 0; PII 0; chi phí 1995đ |
 | hãng ? | pass 1.0; hoàn sai 0; oan 0; PII 0 | pass 1.0; hoàn sai 0; oan 0; PII 0 | pass 1.0; hoàn sai 0; oan 0; PII 0 |
 | hãng DNB | pass 1.0; hoàn sai 0; oan 0; PII 0 | — | — |
 | hãng GHSH | pass 1.0; hoàn sai 0; oan 0; PII 0 | pass 1.0; hoàn sai 0; oan 0; PII 0 | pass 1.0; hoàn sai 0; oan 0; PII 0 |

@@ -129,12 +129,13 @@ Một điều học được, một điều còn chưa chắc.
 - Phiếu B: làm HAZOP ở B4, B5 (guideword PERTURBED, INCAPABLE); câu 2.10: điền `operations` (PIC NV-TUNG, người duyệt NV-HANH, 1 người trực, 6 ca/giờ, chờ tối đa 60 phút, các điều kiện dừng, kênh `#logix-refund-pilot-alerts`) và `legal` (chặn `recipient_contact`, `customer_note` gửi hãng; bắt buộc có nguyên nhân trong tracking khi ghi lỗi hãng) trong `config/operating_gates.json`; cập nhật runbook theo phạm vi v1.
 - Phiếu C (S1): câu 3.1, 3.3; Risk register và runbook ở C10, C11; C12: chạy lại `lab10.grade --incident S1` trên code cuối, chọn **Thu hẹp** (chỉ kho HN), ghi ba dòng bắt buộc và điền `submission/submission.json`.
 - Sửa lỗi toàn vẹn: khôi phục `tests/test_public.py` về bản gốc, giữ các file đã ký/chốt đúng từng byte (CRLF) bằng `.gitattributes`.
-- **Sử dụng AI:** có dùng Claude Code hỗ trợ đọc report, soạn C12 và kiểm bài nộp; bàn đã xem lại số liệu trong report.
+- Sau review: thêm cổng trong `lab10/guards.py` (bỏ số ngày khách tự khai ở `pre_guard`; chặn hoàn lặp, đặt lại người trả về LOGIX, kiểm phê duyệt ở `issue_refund`) và cập nhật C7, C9, C12 cho khớp.
+- **Sử dụng AI:** có dùng Claude Code hỗ trợ đọc report, review code, sửa cổng, soạn C12 và kiểm bài nộp; bàn đã xem lại số liệu trong report.
 
 ### Bằng chứng
 
 - **Commit:** `07c508b` (1.2, 1.4), `e608035` (B4, B5), `fcf5e00` (2.10), `a709e15` (header Phiếu C, runbook), `8d40c10` (3.1, 3.3, C10, C11), `d02eb26` (khôi phục file khoá).
-- **Mã lần chạy:** report tự kiểm tra `R-S1-grade-20261119-215855-a25689` (PASS-VISIBLE); base `R-S1-before-20261119-215855-a25689`, prepared `R-S1-prepared-20261119-215855-a25689`, after `R-S1-after-20261119-215855-a25689`.
+- **Mã lần chạy:** report tự kiểm tra `R-S1-grade-20261119-222152-2a0891` (PASS-VISIBLE); base `R-S1-before-20261119-222152-2a0891`, prepared `R-S1-prepared-20261119-222152-2a0891`, after `R-S1-after-20261119-222152-2a0891`.
 - **Vị trí:** Phiếu A câu 1.2, 1.4; Phiếu B B4, B5, B7.5–B7.6; Phiếu C 3.1, 3.3, C10–C12.
 
 ### Exit ticket

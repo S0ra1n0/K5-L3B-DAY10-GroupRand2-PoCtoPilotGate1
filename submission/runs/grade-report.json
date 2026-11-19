@@ -1,8 +1,8 @@
 {
- "run_id": "R-S1-grade-20261119-215855-a25689",
+ "run_id": "R-S1-grade-20261119-222152-2a0891",
  "incident": "S1",
  "grader_version": "lab10-1.0",
- "code_hash": "a25689e1112186cd70eb1841b96ba935d18e6837fff89a5c1dde9d2ebc83b528",
+ "code_hash": "2a0891e41769a13ee06fb386b92d2f3f634f377a2c15471eda2a6928a4296a6a",
  "integrity": {
   "ok": true,
   "changed": [],
@@ -805,7 +805,7 @@
    "failed": [],
    "review_rate": 0.25,
    "coverage": 0.3636,
-   "cost_per_ticket_vnd": 6789,
+   "cost_per_ticket_vnd": 6790,
    "roi": 0.47,
    "queue_wait_max_min": 0.0,
    "queue_stuck": 0,
@@ -828,15 +828,15 @@
      "trust_why": []
     },
     "cost": {
-     "cost_per_ticket_vnd": 6789,
+     "cost_per_ticket_vnd": 6790,
      "manual_cost_per_ticket_vnd": 10000,
-     "agent_cost_per_day_vnd": 4313,
+     "agent_cost_per_day_vnd": 4323,
      "review_cost_per_day_vnd": 20000,
      "standby_cost_per_day_vnd": 30000,
      "wrongful_refund_per_day_vnd": 0,
-     "net_saving_per_day_vnd": 25687,
+     "net_saving_per_day_vnd": 25677,
      "roi": 0.47,
-     "llm_cost_max_per_ticket_vnd": 670,
+     "llm_cost_max_per_ticket_vnd": 672,
      "llm_cost_ceiling_vnd": 1500
     },
     "refund": {
@@ -854,7 +854,7 @@
      },
      "HN": {
       "tickets_per_day": 7.0,
-      "cost_per_ticket_vnd": 1993,
+      "cost_per_ticket_vnd": 1995,
       "review_rate": 0.1429,
       "worse_than_manual": false
      }
@@ -864,7 +864,7 @@
    },
    "monitors": {
     "escalation_rate": 0.25,
-    "model_override_delay_rate": 0.025,
+    "model_override_delay_rate": 0.0,
     "carrier_fault_rate": 0.375
    },
    "by_segment": {
@@ -886,7 +886,7 @@
       "wrongful_refund_vnd": 0,
       "wrongful_carrier_faults": 0,
       "pii_leaks": 0,
-      "cost_per_ticket_vnd": 1993,
+      "cost_per_ticket_vnd": 1995,
       "worse_than_manual": false
      }
     ],
@@ -946,8 +946,8 @@
    "failed": [],
    "review_rate": 0.0,
    "coverage": 0.3846,
-   "cost_per_ticket_vnd": 6644,
-   "roi": 0.51,
+   "cost_per_ticket_vnd": 6650,
+   "roi": 0.5,
    "queue_wait_max_min": 0.0,
    "queue_stuck": 0,
    "auto_refund_day_max_vnd": 30000,
@@ -969,15 +969,15 @@
      "trust_why": []
     },
     "cost": {
-     "cost_per_ticket_vnd": 6644,
+     "cost_per_ticket_vnd": 6650,
      "manual_cost_per_ticket_vnd": 10000,
-     "agent_cost_per_day_vnd": 3219,
+     "agent_cost_per_day_vnd": 3250,
      "review_cost_per_day_vnd": 0,
      "standby_cost_per_day_vnd": 30000,
      "wrongful_refund_per_day_vnd": 0,
-     "net_saving_per_day_vnd": 16781,
-     "roi": 0.51,
-     "llm_cost_max_per_ticket_vnd": 666,
+     "net_saving_per_day_vnd": 16750,
+     "roi": 0.5,
+     "llm_cost_max_per_ticket_vnd": 677,
      "llm_cost_ceiling_vnd": 1500
     },
     "refund": {
@@ -989,7 +989,7 @@
     "segments": {
      "HN": {
       "tickets_per_day": 5.0,
-      "cost_per_ticket_vnd": 644,
+      "cost_per_ticket_vnd": 650,
       "review_rate": 0.0,
       "worse_than_manual": false
      }
@@ -999,7 +999,7 @@
    },
    "monitors": {
     "escalation_rate": 0.0,
-    "model_override_delay_rate": 0.6,
+    "model_override_delay_rate": 0.0,
     "carrier_fault_rate": 0.8
    },
    "by_segment": {
@@ -1011,7 +1011,7 @@
       "wrongful_refund_vnd": 0,
       "wrongful_carrier_faults": 0,
       "pii_leaks": 0,
-      "cost_per_ticket_vnd": 644,
+      "cost_per_ticket_vnd": 650,
       "worse_than_manual": false
      }
     ],
@@ -1056,9 +1056,9 @@
   }
  },
  "run_ids": {
-  "before": "R-S1-before-20261119-215855-a25689",
-  "prepared": "R-S1-prepared-20261119-215855-a25689",
-  "after": "R-S1-after-20261119-215855-a25689"
+  "before": "R-S1-before-20261119-222152-2a0891",
+  "prepared": "R-S1-prepared-20261119-222152-2a0891",
+  "after": "R-S1-after-20261119-222152-2a0891"
  },
  "visible": {
   "before_red": true,
@@ -1089,12 +1089,6 @@
     "stage": "before",
     "base": 0.0455,
     "incident": 0.4615
-   },
-   {
-    "name": "model_override_delay_rate",
-    "stage": "after",
-    "base": 0.025,
-    "incident": 0.6
    },
    {
     "name": "carrier_fault_rate",
@@ -1135,5 +1129,5 @@
  "hard_gates_ok": true,
  "score": null,
  "verdict": "PASS-VISIBLE (chưa chạy test ẩn)",
- "seconds": 0.128
+ "seconds": 0.116
 }

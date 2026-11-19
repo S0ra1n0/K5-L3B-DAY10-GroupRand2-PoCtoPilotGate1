@@ -339,7 +339,7 @@ Phần 1–3 và mục Giờ cao điểm viết ở vòng 1. Phần 4–5 viết
 | Người giữ công tắc tắt từng thao tác ghi | NV-TUNG (Lê Thanh Tùng) | Tắt/bật từng thao tác trong `config/switches.json` | `#logix-refund-pilot-alerts` |
 | Người nhận khiếu nại của bên thứ ba (hãng, shop, người nhận quà) | NV-OANH (Phạm Kiều Oanh) | Nhận khiếu nại khi đối soát tuần; báo PIC nếu có lỗi ghi oan | `#logix-refund-pilot-alerts`, email đối soát |
 
-Số người trực duyệt mỗi ca: 1 · Mỗi giờ duyệt được: 6 ca · Phạm vi pilot (tất cả / kho nào / bao nhiêu phần trăm): kho HN và CT, 100% ticket của hai kho này (`business.pilot_scope`, quyết định v1 Thu hẹp)
+Số người trực duyệt mỗi ca: 1 · Mỗi giờ duyệt được: 6 ca · Phạm vi pilot (tất cả / kho nào / bao nhiêu phần trăm): kho HN và CT, 100% ticket của hai kho này (`business.pilot_scope`, quyết định v1 Thu hẹp); **v2 (sau sự cố S1): chỉ còn kho HN** (Phiếu C mục C7, C12)
 
 #### Runbook 2 · Nhìn con số nào, ngưỡng nào thì làm gì
 

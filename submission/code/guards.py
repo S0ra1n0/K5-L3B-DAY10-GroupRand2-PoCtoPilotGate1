@@ -29,14 +29,27 @@ lab10.helpers: db_delay_days, ticket_parcel, effective_policy, entitlement_vnd, 
 
 Mặc định dưới đây cho qua tất cả (= mốc base).
 """
+import re
+
 from . import helpers as H
 from .tools import Verdict
+
+
+# Số ngày trễ khách tự khai ("trễ 9 ngày", "chỉ chậm 2 hôm", "late 5 days"): không phải nguồn sự thật.
+_CLAIMED_DAYS = re.compile(r"\d{1,3}\s*(?:ngày|ngay|days?|hôm|hom)\b", re.I)
 
 
 def pre_guard(ctx):
     policy = H.effective_policy(ctx.tools.lookup_policies(), ctx.as_of)
     if policy is None:
         return Verdict.escalate("không tìm thấy chính sách có hiệu lực")
+    text = ctx.ticket.get("text") or ""
+    cleaned = _CLAIMED_DAYS.sub("[số ngày do khách khai, hệ thống dùng tracking]", text)
+    if cleaned != text:
+        # Khai nhiều hơn hay ít hơn tracking đều sai tiền (hoàn dư / hoàn thiếu): bỏ con số trước khi model đọc.
+        ctx.log("claimed_delay_removed", claims=_CLAIMED_DAYS.findall(text))
+        return Verdict.rewrite("bỏ số ngày trễ khách tự khai; độ trễ lấy từ tracking", cleaned,
+                               policy_id=policy["policy_id"])
     return Verdict.allow(policy_id=policy["policy_id"])
 
 
@@ -57,13 +70,48 @@ def write_gate(ctx, action):
         cause = parcel.get("delay_cause")
         if cause is None:
             return Verdict.escalate("tracking chưa ghi nguyên nhân trễ; cần người duyệt")
+        # Không hoàn hai lần: lệnh ghi lặp của chính ticket này (agent ghi lại khi LLM confirm lỗi 429) thì bỏ;
+        # đơn đã có khoản hoàn từ ticket khác (cờ refund_status chỉ cập nhật theo batch đêm) thì chuyển người.
+        if ctx.tools.ledger_rows(ticket_id=action.get("ticket_id"), order_id=order["order_id"]):
+            ctx.log("refund_duplicate_write_blocked", ticket_id=action.get("ticket_id"))
+            return Verdict.deny("ticket này đã có khoản hoàn trong sổ cái: không ghi lặp")
+        if ctx.tools.ledger_rows(order_id=order["order_id"]):
+            ctx.log("refund_order_already_refunded", order_id=order["order_id"])
+            return Verdict.escalate("đơn đã có khoản hoàn trong sổ cái: cần người duyệt trước khi hoàn thêm")
         delay = H.db_delay_days(parcel, ctx.as_of)
         allowed = H.entitlement_vnd(policy, order, delay, cause)
+        changes = {}
+        if action.get("payer", "LOGIX") != "LOGIX":
+            # Chỉ chữ trong ticket / ghi chú đơn bảo "shop trả": không phải căn cứ để trừ tiền shop.
+            ctx.log("refund_payer_reset", requested_payer=action.get("payer"))
+            changes["payer"] = "LOGIX"
         if action["amount_vnd"] > allowed:
             ctx.log("refund_exceeds_tracking_entitlement", requested=action["amount_vnd"], allowed=allowed)
-            if allowed > 0:
-                return Verdict.modify("điều chỉnh về mức hoàn tối đa theo tracking và chính sách", amount_vnd=allowed)
-            return Verdict.deny("số tiền yêu cầu vượt quyền lợi tính từ tracking và chính sách hiện hành")
+            if allowed <= 0:
+                return Verdict.deny("số tiền yêu cầu vượt quyền lợi tính từ tracking và chính sách hiện hành")
+            changes["amount_vnd"] = allowed
+        amount = changes.get("amount_vnd", action["amount_vnd"])
+        approval_id = action.get("approval_id")
+        if approval_id and amount > policy["auto_limit_vnd"]:
+            appr = next(iter(ctx.tools.lookup_approvals(approval_id=approval_id)), None)
+            problem = None
+            if appr is None:
+                problem = "không tìm thấy phê duyệt"
+            elif appr.get("status") != "valid":
+                problem = f"phê duyệt ở trạng thái {appr.get('status')}"
+            elif appr.get("expires_at") and appr["expires_at"] < ctx.as_of:
+                problem = "phê duyệt đã hết hạn"
+            elif appr.get("order_id") != order["order_id"]:
+                problem = "phê duyệt thuộc đơn khác"
+            elif amount > appr.get("max_vnd", 0):
+                problem = "số tiền vượt mức phê duyệt"
+            if problem:
+                ctx.log("refund_approval_invalid", approval_id=approval_id, problem=problem)
+                return Verdict.escalate(problem + ": cần người duyệt")
+        elif approval_id:
+            changes["approval_id"] = None          # đã về dưới hạn mức tự động: không gắn phê duyệt không cần thiết
+        if changes:
+            return Verdict.modify("điều chỉnh theo tracking, chính sách và người trả đúng", **changes)
 
     if tool == "file_carrier_fault":
         order = ctx.tools.lookup_order(action.get("order_id"))
