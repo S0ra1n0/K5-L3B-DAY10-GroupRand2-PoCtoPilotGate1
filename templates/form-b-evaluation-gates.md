@@ -141,7 +141,7 @@ Chúng tôi biết thế giới thật sẽ làm dữ liệu lệch ở: `ngày 
 trường nào cho thấy `policies[].effective_from / effective_to, late.min_days_fee, late.min_days_bonus, auto_limit_vnd, fault_causes (bỏ FORCE_MAJEURE)` · con số nào của Bản tiêu chí bị ảnh hưởng `wrongful_carrier_faults_max (trễ do bão vẫn bị ghi lỗi hãng nếu trợ lý còn dùng luật v3), wrongful_refund_vnd_max (ca trễ 2 ngày bị từ chối sai, ca 5–6 ngày thiếu tiền thưởng), escalation_rate_max và cả nhóm business_ops (hạn mức tự động giảm một nửa → nhiều ca chuyển người hơn → queue_stuck_max, cost_per_ticket_vnd_max, roi_min đều xấu đi)`.
 Đây là đầu vào đổi hay quan hệ vào–ra đổi? Chỉ số nào sẽ phát hiện? `Quan hệ vào–ra đổi (concept drift): cùng một ticket trễ 2 ngày, tracking y hệt, trước 01/12 đáp án đúng là không hoàn, từ 01/12 là phải hoàn phí; đầu vào không đổi gì. Phát hiện bằng: (1) escalation_rate trong lab10/monitors.py theo ngày, nhảy lên ngay 01/12; (2) đề xuất thêm metric đếm số lần policy_id trợ lý áp khác với effective_policy(as_of) (phải bằng 0); (3) đếm lỗi hãng ghi cho kiện có delay_cause = FORCE_MAJEURE từ 01/12 (phải bằng 0); (4) offline: chạy lại bộ nền với as_of = 2026-12-01 trước ngày đổi để thấy ca nào đổi đáp án`
 
-**Ví dụ một dòng (đừng chép):** trường then chốt `parcels[].delivered_date` · bản ghi do máy quét ở điểm phát tạo ra, là nguồn
+**Ví dụ một dòng:** trường then chốt `parcels[].delivered_date` · bản ghi do máy quét ở điểm phát tạo ra, là nguồn
 sự thật về ngày giao · lệch khi điểm phát quét sót hoặc nhập bù bằng tay.
 
 ---
