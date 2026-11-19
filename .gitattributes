@@ -7,3 +7,6 @@
 config/acceptance_criteria.json -text
 lab10/guards_round1.py -text
 config/operating_gates.round1.json -text
+submission/config/acceptance_criteria.json -text
+submission/code/guards_round1.py -text
+submission/config/operating_gates.round1.json -text
