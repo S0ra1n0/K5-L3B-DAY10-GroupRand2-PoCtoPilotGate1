@@ -24,8 +24,8 @@ rồi mới chạy đánh giá. Khối 1 không sửa code.
 
 ### Câu 1.2 · Mục tiêu nhìn từ hai người
 
-- Chị Oanh, kế toán đối soát (không dùng trợ lý, nhưng phải khớp sổ với hãng và shop mỗi tuần): …
-- Chị Hạnh, trưởng ca CSKH (phải duyệt những ca trợ lý chuyển sang): …
+- Chị Oanh, kế toán đối soát (không dùng trợ lý, nhưng phải khớp sổ với hãng và shop mỗi tuần): khoản tiền hoàn phải đúng với lỗi trợ lý ghi, tự động đối soát.
+- Chị Hạnh, trưởng ca CSKH (phải duyệt những ca trợ lý chuyển sang): khi agent chuyển sang cần đúng người phụ trách phần việc phản hồi, và thời gian trả lên nên gói gọn trong ca.
 
 ---
 
@@ -48,12 +48,12 @@ trợ lý có đang gây thiệt hại cho bên ngoài LogiX không; không có 
 
 | | Offline, cho MỘT bước (câu 1.3) | Telemetry production (câu 1.4) |
 |---|---|---|
-| **Bước / hành vi được đo** | | |
-| **Thước đo** (một câu, có đơn vị) | | |
-| **Dữ liệu** (lấy ở đâu, bao nhiêu, ai gán nhãn) | | |
-| **Cách tính** (công thức, mẫu số, cách xử lý ca thiếu dữ liệu) | | |
-| **Khung thời gian / ngưỡng báo động** | (không áp dụng) | |
-| **Điểm mù** (thước đo này KHÔNG thấy gì) | | |
+| **Bước / hành vi được đo** | | Trợ lý tự động ghi lỗi cho hãng vận chuyển (`file_carrier_fault`), làm hãng bị phạt tiền và phải chịu trách nhiệm. |
+| **Thước đo** (một câu, có đơn vị) | | Số lỗi tự động ghi cho mỗi hãng mà tracking không có nguyên nhân (lỗi / hãng / ngày), và tổng lỗi của hãng trong 7 ngày. |
+| **Dữ liệu** (lấy ở đâu, bao nhiêu, ai gán nhãn) | | Log mọi lệnh `file_carrier_fault`, connect với tracking DB theo `order_id`. Không có nhãn: dùng tracking DB thay nhãn, khiếu nại của hãng khi chị Oanh đối soát tuần là nhãn đến muộn. |
+| **Cách tính** (công thức, mẫu số, cách xử lý ca thiếu dữ liệu) | | Đếm lệnh ghi lỗi mà tracking không xác nhận nguyên nhân, chia cho tổng lệnh ghi lỗi trong ngày. Đơn thiếu tracking được tính là không có căn cứ (không loại khỏi mẫu số). |
+| **Khung thời gian / ngưỡng báo động** | (không áp dụng) | Mỗi lệnh ghi: ≥ 1 lỗi không căn cứ thì báo ngay cho NV-TUNG. Mỗi ngày: một hãng > 2 lỗi tự động (`max_auto_strikes_per_carrier_per_day`) thì báo động. 7 ngày: hãng còn 1 lỗi nữa là bị đình chỉ (`suspend_after_strikes_7d − 1`) thì báo NV-HANH và NV-OANH. |
+| **Điểm mù** (thước đo này KHÔNG thấy gì) | | Không thấy khi chính tracking DB sai; không thấy thiệt hại cho khách và shop (hoàn sai tiền, lộ PII); không đếm lỗi do người duyệt ghi. |
 
 **Ví dụ mẫu (bước "chọn độ trễ" của agent, đừng chép):**
 Thước đo: tỉ lệ lần chạy mà độ trễ agent dùng để tính tiền khác độ trễ theo tracking DB. Dữ liệu: sự kiện `proposal.delay_days_used`
