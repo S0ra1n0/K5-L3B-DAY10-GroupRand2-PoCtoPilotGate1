@@ -16,7 +16,7 @@ Họ tên đầy đủ và MSSV của **mọi** thành viên; bàn 3 người th
 |   1 | Nguyễn Lê Đăng Khoa | 2A202603847 | Kỹ sư cổng |        x     |
 |   2 |           |      |     |             |
 |   3 |  Nguyễn Minh Quang   |  2A202603791    | Kỹ sư cổng    |             |
-|   4 |           |      |     |             |
+|   4 | Nguyễn Ngọc Quang | 2A202603773 | Vận hành và pháp lý |             |
 
 Ghi `members` trong `submission/submission.json` theo dạng `"HoVaTen-MSSV"`, khớp bảng trên.
 
@@ -114,3 +114,30 @@ Một điều học được, một điều còn chưa chắc.
 
 - **Một điều học được:** Cổng cấp hệ thống (system-level write gates) nằm ngoài prompt và model là phòng tuyến quyết định sống còn; các lỗi model override hay dữ liệu tracking mâu thuẫn hoàn toàn có thể được ngăn chặn triệt để khi write gate đối chiếu với nguồn sự thật (Single Source of Truth) và trần vận hành (ops limits).
 - **Một điều còn chưa chắc:** Trong môi trường triển khai thực tế (pilot thật), nếu bản thân dữ liệu tracking DB bị nhập bù sai lệch hoặc có độ trễ đồng bộ từ tài xế bên ngoài, write gate vẫn có thể bị "mù" nếu chỉ coi DB là chân lý tuyệt đối mà không có kênh đối soát độc lập thời gian thực.
+
+## NguyenNgocQuang-2A202603773
+
+### Phần việc phụ trách
+
+- **Vai:** Vận hành và pháp lý.
+- **File chính:** `config/operating_gates.json` (mục `operations`, `legal`), `submission/submission.json`.
+- **Mục phiếu:** Phiếu A câu 1.2, 1.4; Phiếu B mục B4, B5 (HAZOP) và câu 2.10 (runbook, cổng vận hành); Phiếu C header, câu 3.1, 3.3, mục C10, C11 và C12 (quyết định v2, ba dòng bắt buộc).
+
+### Đóng góp cụ thể
+
+- Phiếu A: viết câu 1.2 và 1.4.
+- Phiếu B: làm HAZOP ở B4, B5 (guideword PERTURBED, INCAPABLE); câu 2.10: điền `operations` (PIC NV-TUNG, người duyệt NV-HANH, 1 người trực, 6 ca/giờ, chờ tối đa 60 phút, các điều kiện dừng, kênh `#logix-refund-pilot-alerts`) và `legal` (chặn `recipient_contact`, `customer_note` gửi hãng; bắt buộc có nguyên nhân trong tracking khi ghi lỗi hãng) trong `config/operating_gates.json`; cập nhật runbook theo phạm vi v1.
+- Phiếu C (S1): câu 3.1, 3.3; Risk register và runbook ở C10, C11; C12: chạy lại `lab10.grade --incident S1` trên code cuối, chọn **Thu hẹp** (chỉ kho HN), ghi ba dòng bắt buộc và điền `submission/submission.json`.
+- Sửa lỗi toàn vẹn: khôi phục `tests/test_public.py` về bản gốc, giữ các file đã ký/chốt đúng từng byte (CRLF) bằng `.gitattributes`.
+- **Sử dụng AI:** có dùng Claude Code hỗ trợ đọc report, soạn C12 và kiểm bài nộp; bàn đã xem lại số liệu trong report.
+
+### Bằng chứng
+
+- **Commit:** `07c508b` (1.2, 1.4), `e608035` (B4, B5), `fcf5e00` (2.10), `a709e15` (header Phiếu C, runbook), `8d40c10` (3.1, 3.3, C10, C11), `d02eb26` (khôi phục file khoá).
+- **Mã lần chạy:** report tự kiểm tra `R-S1-grade-20261119-215855-a25689` (PASS-VISIBLE); base `R-S1-before-20261119-215855-a25689`, prepared `R-S1-prepared-20261119-215855-a25689`, after `R-S1-after-20261119-215855-a25689`.
+- **Vị trí:** Phiếu A câu 1.2, 1.4; Phiếu B B4, B5, B7.5–B7.6; Phiếu C 3.1, 3.3, C10–C12.
+
+### Exit ticket
+
+- **Một điều học được:** cổng con số và con người (người duyệt, điều kiện dừng, phạm vi pilot) quan trọng ngang cổng code; report cho phép "Tiếp tục" chưa có nghĩa là nên mở rộng khi độ phủ chỉ khoảng 38%.
+- **Một điều còn chưa chắc:** với 1 người trực, 6 ca/giờ, hàng chờ có đủ khi tracking thật hay thiếu ngày giao làm tỉ lệ chuyển người duyệt tăng vượt 0,25 không.

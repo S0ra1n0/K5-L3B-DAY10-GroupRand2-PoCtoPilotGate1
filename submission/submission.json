@@ -1,12 +1,16 @@
 {
-  "team": "",
-  "members": [],
-  "incident": "",
-  "decision_v1": "",
-  "decision_v2": "",
+  "team": "Rand2",
+  "members": [
+    "NguyenLeDangKhoa-2A202603847",
+    "NguyenMinhQuang-2A202603791",
+    "NguyenNgocQuang-2A202603773"
+  ],
+  "incident": "S1",
+  "decision_v1": "Thu hẹp",
+  "decision_v2": "Thu hẹp",
   "three_lines": {
-    "environment_assumption": "",
-    "reduce_or_prevent": "",
-    "measure_in_pilot": ""
+    "environment_assumption": "Tracking DB là nguồn sự thật đáng tin (ngày giao và nguyên nhân trễ đúng, đồng bộ kịp), trong khi ngoài thực tế tài xế có thể quét sót, điền bù hoặc đồng bộ trễ ngày giao.",
+    "reduce_or_prevent": "Ngăn được tác hại trong các ca đã biết (thiếu ngày giao, lỗi thứ 3 trong ngày, khách khai đè tracking) vì cổng nằm trước lệnh ghi, ngoài model; nhưng chỉ GIẢM tác hại khi chính tracking sai mà vẫn trông hợp lệ, vì cổng tin tracking.",
+    "measure_in_pilot": "Đo lại tỉ lệ kiện DELIVERED thiếu ngày giao, tỉ lệ chuyển người duyệt và thời gian chờ với 1 người trực, chi phí và ROI thật trên kho HN, và số lỗi ghi oan bị hãng khiếu nại qua đối soát tuần."
   }
 }
