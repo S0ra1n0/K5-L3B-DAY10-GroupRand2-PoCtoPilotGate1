@@ -1,0 +1,9 @@
+# Mặc định: mọi file văn bản dùng LF trên mọi máy (Windows, Mac, Linux)
+# để hash khớp với lab10/MANIFEST.json và không bị đổi xuống dòng ngầm.
+* text=auto eol=lf
+
+# Các file đã ký / đã chốt trên Windows: hash được tính trên bản CRLF.
+# Giữ nguyên từng byte, Git không được đổi xuống dòng.
+config/acceptance_criteria.json -text
+lab10/guards_round1.py -text
+config/operating_gates.round1.json -text
