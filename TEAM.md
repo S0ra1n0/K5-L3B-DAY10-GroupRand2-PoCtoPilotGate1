@@ -104,7 +104,7 @@ Một điều học được, một điều còn chưa chắc.
   - Mốc base ban đầu: `R-base-before-20261119-161158-bde05c`
   - Mốc prepared sự cố S1: `R-S1-prepared-20261119-171919-159538`
   - Mốc after sự cố S1 (sau sửa code): `R-S1-after-20261119-184342-30d810`
-  - Báo cáo tự kiểm tra đạt chuẩn: `R-S1-grade-20261119-184716-a25689` / `R-S1-grade-20261119-195313-a25689` (`PASS-VISIBLE`, 1 integrity ✅, 2 criteria ✅, 3 visible ✅, 5 regression ✅, 6 monitor ✅)
+  - Báo cáo tự kiểm tra đạt chuẩn: `R-S1-grade-20261119-184716-a25689` / `R-S1-grade-20261119-195313-a25689` (`PASS-VISIBLE`, 1 integrity , 2 criteria , 3 visible , 5 regression , 6 monitor )
   - Kiểm tra regression bộ nền: `R-base-after-20261119-184337-30d810` (pass_rate 1.0)
 - **Dòng trong phiếu:**
   - Phiếu B: Mục B0 (dòng 1), B1 (câu 2.1), B2 (bảng soát lỗi T-002), B6 (pre-mortem).
