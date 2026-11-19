@@ -51,6 +51,9 @@ def write_gate(ctx, action):
         if policy is None:
             return Verdict.escalate("không tìm thấy chính sách có hiệu lực")
         parcel = H.ticket_parcel(order, ctx.ticket, ctx.as_of)
+        if parcel.get("status") == "DELIVERED" and not parcel.get("delivered_date"):
+            ctx.log("delivered_without_date_escalate", parcel_id=parcel.get("parcel_id"))
+            return Verdict.escalate("kiện đã giao nhưng thiếu ngày giao trong tracking: cần người duyệt")
         cause = parcel.get("delay_cause")
         if cause is None:
             return Verdict.escalate("tracking chưa ghi nguyên nhân trễ; cần người duyệt")
@@ -58,6 +61,8 @@ def write_gate(ctx, action):
         allowed = H.entitlement_vnd(policy, order, delay, cause)
         if action["amount_vnd"] > allowed:
             ctx.log("refund_exceeds_tracking_entitlement", requested=action["amount_vnd"], allowed=allowed)
+            if allowed > 0:
+                return Verdict.modify("điều chỉnh về mức hoàn tối đa theo tracking và chính sách", amount_vnd=allowed)
             return Verdict.deny("số tiền yêu cầu vượt quyền lợi tính từ tracking và chính sách hiện hành")
 
     if tool == "file_carrier_fault":
@@ -67,11 +72,20 @@ def write_gate(ctx, action):
         if policy is None or parcel is None:
             ctx.log("carrier_fault_without_source_record", parcel_id=action.get("parcel_id"))
             return Verdict.deny("không tìm thấy chính sách hoặc kiện hàng trong nguồn sự thật")
+        if parcel.get("status") == "DELIVERED" and not parcel.get("delivered_date"):
+            ctx.log("carrier_fault_missing_delivered_date", parcel_id=parcel["parcel_id"])
+            return Verdict.deny("kiện đã giao nhưng thiếu ngày giao: không tự ghi lỗi")
         delay = H.db_delay_days(parcel, ctx.as_of)
         if action.get("carrier_id") != parcel.get("carrier_id") or not H.carrier_at_fault(policy, parcel, delay):
             ctx.log("carrier_fault_not_supported_by_tracking", parcel_id=parcel["parcel_id"],
                     recorded_cause=parcel.get("delay_cause"))
             return Verdict.deny("tracking không xác nhận hãng và nguyên nhân chịu lỗi")
+        carrier_id = action.get("carrier_id")
+        faults_today = len(ctx.tools.fault_rows(carrier_id=carrier_id))
+        max_faults = ctx.tools.ops_limits().get("max_auto_strikes_per_carrier_per_day", 2)
+        if faults_today >= max_faults:
+            ctx.log("carrier_fault_daily_cap_exceeded", carrier_id=carrier_id, faults_today=faults_today, cap=max_faults)
+            return Verdict.deny(f"hãng {carrier_id} đã chạm trần {max_faults} lỗi tự động trong ngày: không ghi thêm tự động")
         if action.get("delay_days") != delay:
             return Verdict.modify("dùng số ngày trễ từ tracking", delay_days=delay)
 

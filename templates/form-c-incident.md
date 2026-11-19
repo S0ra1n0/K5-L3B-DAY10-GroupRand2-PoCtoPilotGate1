@@ -30,10 +30,10 @@ Mỗi lệnh `lab10.eval` và `lab10.grade` tự ghi một dòng vào `runs/jour
 
 | # | Mã lần chạy | Bộ ticket · mốc | Đổi MỘT thứ gì so với lần trước | pass_rate (khoảng tin cậy 95%) | pass_k | Hoàn sai (đ) · lỗi hãng oan · lộ dữ liệu | Tỉ lệ chuyển người | Kết luận (một câu) |
 |---|---|---|---|---|---|---|---|---|
-| 1 | | Sx · prepared | nhận thẻ đã bốc, chưa sửa thêm (đúng cổng vòng 1 đã chốt) | | | | | |
-| 2 | | Sx · after | | | | | | |
-| 3 | | Sx · after | | | | | | |
-| 4 | | base · after | (kiểm không regression) | | | | | |
+| 1 | `R-S1-prepared-20261119-171919-159538` | S1 · prepared | nhận thẻ đã bốc, chưa sửa thêm (đúng cổng vòng 1 đã chốt) | 0.6250 [0.2500; 0.8750] | 0.6250 | Hoàn sai: 110.000đ · lỗi hãng oan: 10 · lộ dữ liệu: 0 | 0.1250 | Cổng vòng 1 giảm lỗi oan từ 30 xuống 10, nhưng còn hỏng ở CT và ROI 0,29 < 0,3 |
+| 2 | `R-S1-after-20261119-172831-a35909` | S1 · after | Cổng kinh doanh: pilot_scope tạm rút kho CT, chỉ giữ HN | 0.8000 [0.8000; 0.8000] | 0.8000 | Hoàn sai: 0đ · lỗi hãng oan: 0 · lộ dữ liệu: 0 | 0.0000 | Hết lỗi oan GHSH nhưng S1-03 còn hỏng do cổng từ chối cả khoản thay vì sửa số tiền |
+| 3 | `R-S1-after-20261119-184342-30d810` | S1 · after | Sửa guards (modify tiền hoàn S1-03, escalate thiếu ngày giao, chặn trần lỗi hãng >= 2), thêm 2 monitor | 1.0000 [1.0000; 1.0000] | 1.0000 | Hoàn sai: 0đ · lỗi hãng oan: 0 · lộ dữ liệu: 0 | 0.0000 | Đạt tuyệt đối 100% pass_rate trên S1, sạch lỗi oan và hoàn sai, monitor sáng đèn rõ rệt |
+| 4 | `R-base-after-20261119-184337-30d810` | base · after | (kiểm không regression) sau khi sửa guards và monitors | 1.0000 [1.0000; 1.0000] | 1.0000 | Hoàn sai: 0đ · lỗi hãng oan: 0 · lộ dữ liệu: 0 | 0.2500 | Regression đạt chuẩn 100%, không phát sinh ca hỏng mới trên bộ nền |
 
 ---
 
@@ -326,9 +326,9 @@ python3 -m lab10.grade --incident Sx
 
 | Nhánh fault tree | Nguyên nhân | Chỗ sửa (hàm + nhánh trong `guards.py`, hoặc khoá trong `operating_gates.json`) | Tầng (phát hiện / chặn / giới hạn thiệt hại / vận hành) | GIẢM khả năng hay NGĂN hẳn? Vì sao | Mã lần chạy sau khi sửa |
 |---|---|---|---|---|---|
-| [1] | | | | | |
-| [2] | | | | | |
-| [3] | **Kinh doanh / phạm vi pilot** (vai Sản phẩm và kinh doanh): với cổng vòng 1, toàn bộ tác hại còn lại của S1 dồn vào kho `CT`. Ở mốc prepared `R-S1-prepared-20261119-172831-a35909`, kho CT có pass_rate 0,3333, hoàn sai 110.000đ, 10 lỗi oan cho GHSH. ROI cả gói tụt còn 0,29, dưới ngưỡng đã ký 0,3 (dòng "VƯỢT TRẦN"), vì tiền hoàn sai bị trừ thẳng vào tiết kiệm ròng. Kho HN cùng lúc có hoàn sai 0, lỗi oan 0 | `config/operating_gates.json` → `business.pilot_scope.warehouses`: `["HN", "CT"]` → `["HN"]`. Tạm rút CT khỏi pilot cho tới khi cổng code ở nhánh [1]/[2] chạy lại cho CT ra `oan 0`. Ticket CT ngoài phạm vi quay về làm tay như hiện nay, do CSKH kho CT xử lý. Giữ nguyên `daily_refund_cap_vnd` 2.000.000đ, `cost_budget_per_ticket_vnd` 1.500đ, `roi_min` 0,3 | Giới hạn thiệt hại | **GIẢM**, không ngăn. Rút CT thì GHSH không còn bị trợ lý ghi lỗi ở tuyến Cần Thơ, nhưng lỗi gốc vẫn còn trong code: ngày giao trống bị tính tới `as_of`, không đếm trần 2 lỗi mỗi hãng mỗi ngày. Kho nào gặp kiện thiếu ngày giao hoặc nhiều lỗi dồn một ngày vẫn có thể gây lại tác hại. Kết quả: S1 `wrongful_refund_vnd` 110.000đ → 0, `wrongful_carrier_faults` 10 → 0, ROI 0,29 → 0,51 (report in "Không vượt trần kinh doanh / vận hành nào"). Cái giá: độ phủ S1 0,6154 → 0,3846, bộ nền 0,5455 → 0,3636; chi phí mỗi ticket bộ nền 4.723đ → 6.789đ (vẫn ≤ 7.500đ đã ký); ROI bộ nền 1,12 → 0,47; tỉ lệ chuyển người bộ nền 0,1667 → 0,25 (vừa chạm trần 0,25 đã ký). Bộ nền `regression ✅`, không có ca mới hỏng. pass_rate S1 vẫn 0,8 < 0,92 vì `S1-03` (kho HN) còn hỏng: cổng hiện tại **chặn hẳn** khoản hoàn 110.000đ thay vì **sửa về** 30.000đ theo tracking, việc của nhánh code | S1: `R-S1-after-20261119-172831-a35909` (grade `R-S1-grade-20261119-172829-a35909`) · bộ nền: `R-base-after-20261119-172041-48b9b4` |
+| [1] | **Khách tự khai đè tracking** (S1-01, S1-03): Model lấy số ngày trễ khách khai đè lên tracking (`model_override`), agent đòi hoàn tiền 110.000đ và ghi lỗi hãng sai lệch. Cổng vòng 1 dùng `Verdict.deny` từ chối cả khoản hoàn khiến khách hợp lệ mất 30.000đ quyền lợi (lỗi under-refund). | `lab10/guards.py` trong hàm `write_gate`, nhánh `tool == "issue_refund"`: khi `action["amount_vnd"] > allowed`, nếu `allowed > 0` thì trả về `Verdict.modify("điều chỉnh về mức hoàn tối đa theo tracking và chính sách", amount_vnd=allowed)`. Nhánh `file_carrier_fault` đã có cổng sửa `delay_days=delay` theo tracking DB từ vòng 1. | Chặn | **NGĂN HẲN**. Cổng ghi ép trực tiếp tham số `amount_vnd` về đúng `allowed` và `delay_days` về đúng số ngày từ tracking DB, loại bỏ hoàn toàn khả năng lời khai của khách làm sai lệch số tiền hoàn và lỗi hãng. S1-03 đạt hoàn 30.000đ và ghi lỗi GHSH 4 ngày đúng nhãn. | S1: `R-S1-after-20261119-184342-30d810` (grade `R-S1-grade-20261119-184347-30d810`) |
+| [2] | **Thiếu ngày giao trong tracking dù `status: DELIVERED`** (S1-20, S1-21): Kiện hàng đã giao nhưng tài xế quét sót nên `delivered_date: null` (O-2120, O-2121). Hàm `H.db_delay_days` mặc định lấy `as_of` trừ `promised_date` nên tính trễ khống thành 6 ngày, trợ lý tự hoàn tiền và ghi lỗi oan cho GHSH. | `lab10/guards.py` trong hàm `write_gate`: (a) nhánh `issue_refund`: kiểm tra `if parcel.get("status") == "DELIVERED" and not parcel.get("delivered_date"): return Verdict.escalate("kiện đã giao nhưng thiếu ngày giao trong tracking: cần người duyệt")`; (b) nhánh `file_carrier_fault`: kiểm tra tương tự và trả về `Verdict.deny("kiện đã giao nhưng thiếu ngày giao: không tự ghi lỗi")`. | Chặn và Vận hành | **NGĂN HẲN** việc tự động xuất tiền hoàn và tự động ghi lỗi hãng oan khi dữ liệu tracking mâu thuẫn/thiếu ngày giao. Chuyển ca sang cho nhân viên kiểm tra sổ giao của hãng có chữ ký người nhận. S1-20 và S1-21 chuyển người duyệt đúng nhãn. | S1: `R-S1-after-20261119-184342-30d810` |
+| [3] | **Lỗi dồn vượt ngưỡng đình chỉ & Phạm vi pilot** (S1-40..S1-43): Trợ lý tự động ghi lỗi hãng không giới hạn số lượng trong ngày, trong khi Ops có trần 2 lỗi/hãng/ngày (`ops_limits.max_auto_strikes_per_carrier_per_day = 2`). GHSH bị ghi 4 lỗi dồn dập ngày 14/11 làm vượt ngưỡng đình chỉ tuyến (3 lỗi/7 ngày). | (a) Code trong `lab10/guards.py` nhánh `file_carrier_fault`: đếm `faults_today = len(ctx.tools.fault_rows(carrier_id=carrier_id))`, nếu `faults_today >= max_faults` (2 lỗi) thì trả về `Verdict.deny(f"hãng {carrier_id} đã chạm trần {max_faults} lỗi tự động trong ngày: không ghi thêm tự động")`. Nhánh `notify_carrier` chỉ gửi thông báo khi có lỗi trong `fault_rows`. (b) Cấu hình `config/operating_gates.json`: `business.pilot_scope.warehouses`: tạm thu hẹp về `["HN"]` (rút CT), vé ngoài phạm vi chuyển CSKH xử lý tay. | Giới hạn thiệt hại và Chặn | Cổng code **NGĂN HẲN** việc tự động ghi lỗi vượt quá 2 lỗi/ngày/hãng (chặn trước khi chạm ngưỡng 3 lỗi/7 ngày đình chỉ tuyến); việc thu hẹp scope về HN là biện pháp **GIẢM** rủi ro tác động đối tác ngoài thực tế. Kết quả: lỗi ghi oan trên S1 và bộ nền = 0, hoàn sai = 0, ROI S1 = 0,51, pass_rate S1 = 1,0. | S1: `R-S1-after-20261119-184342-30d810` · bộ nền: `R-base-after-20261119-184337-30d810` |
 
 ---
 
@@ -341,36 +341,40 @@ Thẻ S5 dùng mục này cho một con số kinh doanh: chi phí mỗi ticket t
 
 | | Chỉ số theo dõi mới của bàn |
 |---|---|
-| **Tên trong `MONITORS`** | |
-| **Bước / hành vi được đo** | |
-| **Thước đo** (một câu, có đơn vị) | |
-| **Dữ liệu** (trường nào của trial, không có nhãn) | |
-| **Cách tính** (công thức, mẫu số, cách xử lý ca thiếu dữ liệu) | |
-| **Khung thời gian / ngưỡng báo động** | |
-| **Điểm mù** (chỉ số này KHÔNG thấy gì) | |
-| Giá trị trên bộ nền · trên thẻ (đọc mục `monitor` của report) | |
+| **Tên trong `MONITORS`** | `model_override_delay_rate` (đăng ký tại `lab10/monitors.py: MONITORS`) |
+| **Bước / hành vi được đo** | Bước trích xuất và đối chiếu độ trễ: phát hiện khi model lấy số ngày khách tự khai trong ticket đè lên số ngày trễ ghi nhận trong tracking DB (`event: model_override`). |
+| **Thước đo** | Tỉ lệ ticket phát sinh sự kiện model override độ trễ trên tổng số ticket được xử lý (đơn vị: tỉ lệ từ 0.0 đến 1.0, làm tròn 4 chữ số thập phân). |
+| **Dữ liệu** | Trường `trial["events"]` của từng ticket trong batch chạy (dữ liệu telemetry production, hoàn toàn không cần nhãn ground truth). |
+| **Cách tính** | `sum(any(e.get("type") == "model_override" for e in t.get("events", [])) for t in trials) / max(1, len(trials))`. Xử lý ca thiếu dữ liệu: nếu `trials` rỗng trả về `0.0`. |
+| **Khung thời gian / ngưỡng báo động** | Đo liên tục theo từng ca (8 giờ) và tổng hợp mỗi ngày. Ngưỡng báo động: **Bình thường:** ≤ 0.05 (≤ 5%); **Cảnh báo (vàng):** > 0.05 (báo CSKH trưởng ca theo dõi xu hướng khách khiếu nại phóng đại); **Báo động (đỏ):** > 0.15 (> 15%, báo Kỹ sư cổng và PO kiểm tra prompt drift hoặc lỗi trích xuất ngày của LLM). |
+| **Điểm mù** (chỉ số này KHÔNG thấy gì) | Chỉ số này KHÔNG phát hiện được khi cả khách hàng lẫn tracking DB đều ghi nhận sai ngày giao từ đầu (sai tại nguồn sự thật DB), hoặc khi khách không tự khai số ngày cụ thể nhưng tracking bị thiếu `delivered_date`. |
+| Giá trị trên bộ nền · trên thẻ (đọc mục `monitor` của report) | **Bộ nền (base):** before = 0.0455 (4.55%), after = 0.0250 (2.50%).<br>**Trên thẻ (S1):** before = 0.4615 (46.15%), after = 0.6000 (60.00%).<br>*(Monitor sáng đèn rõ rệt ở cả mốc before và after, giá trị gói sự cố cao gấp 10–24 lần bộ nền. Đội cũng đã đăng ký thêm monitor phụ `carrier_fault_rate`: base after = 0.375, S1 after = 0.8).* |
 
 ---
 
 <a id="c9"></a>
 
-## C9 · Câu 3.7 · Fault tree SAU khi sửa (mã lần chạy: `__________`)
+## C9 · Câu 3.7 · Fault tree SAU khi sửa (mã lần chạy: `R-S1-grade-20261119-184347-30d810`)
 
 Vẽ lại cây ở C6. Ở mỗi nhánh đã xử lý, thêm một nút `VÀ [gate … hỏng]` và ghi:
 
 ```
-[ĐỈNH] ______________________________
+[ĐỈNH] GHSH bị ghi lỗi/phạt oan; từ 3 lỗi oan trong 7 ngày có thể bị đình tuyến
+ (bên chịu: GHSH và 12 tài xế; đo bằng wrongful_carrier_faults, tiền phạt 150.000đ/lỗi)
  └─ HOẶC
- ├─ [1] ______________ VÀ [gate ______ hỏng]
- ├─ [2] ______________ VÀ [gate ______ hỏng]
- └─ [3] ______________ (còn hở?)
+    ├─ [1] Khách tự khai đè tracking VÀ [gate write_gate modify(amount_vnd/delay_days) hỏng]
+    │     └─ đã ngăn: write_gate ép số tiền hoàn về allowed theo tracking DB và ép delay_days theo tracking
+    ├─ [2] Thiếu delivered_date VÀ [gate write_gate escalate(issue_refund)/deny(file_carrier_fault) hỏng]
+    │     └─ đã ngăn: status=DELIVERED nhưng thiếu delivered_date thì không tự hoàn, không ghi lỗi, chuyển người
+    └─ [3] Lỗi dồn vượt ngưỡng đình chỉ VÀ [gate write_gate khống chế trần 2 lỗi/ngày hỏng]
+          └─ đã ngăn: đếm số lỗi trong ngày của hãng, từ lỗi thứ 3 trở đi từ chối tự ghi lỗi hãng
 ```
 
 | Nhánh | Gate (hàm trong `guards.py` / khoá config / metric trong `monitors.py`) | Tầng gate (phát hiện / chặn / giới hạn thiệt hại / vận hành) | Giảm hay ngăn? Vì sao | Nhánh còn hở |
 |---|---|---|---|---|
-| [1] | | | | |
-| [2] | | | | |
-| [3] | | | | |
+| [1] | `write_gate` (`issue_refund` modify `amount_vnd=allowed`, `file_carrier_fault` modify `delay_days`) | Chặn | **Ngăn**: Cổng ghi ép trực tiếp tham số theo tracking DB, loại bỏ lời khai phóng đại | Nếu chính tracking DB bị ghi sai ngày cam kết giao (`promised_date`) |
+| [2] | `write_gate` (`status == DELIVERED and not delivered_date`: escalate ở refund, deny ở fault) | Chặn và Vận hành | **Ngăn**: Kiện giao quét sót ngày không thể tự kích hoạt hoàn tiền hay phạt hãng; chuyển người duyệt đối chiếu sổ giao | Nếu tài xế tự ý điền bù ngày giao giả mạo vào tracking DB mà không qua đối soát |
+| [3] | `write_gate` (`faults_today >= max_strikes`: deny) + config `pilot_scope: ["HN"]` | Chặn và Giới hạn thiệt hại | **Ngăn** ở trần tự ghi lỗi ngày (tối đa 2 lỗi/ngày); **Giảm** ở thu hẹp kho HN | Các lỗi phân bổ rải rác nhiều ngày (tích lũy đủ 3 lỗi trong 7 ngày dù mỗi ngày chỉ 1 lỗi) |
 
 ---
 
