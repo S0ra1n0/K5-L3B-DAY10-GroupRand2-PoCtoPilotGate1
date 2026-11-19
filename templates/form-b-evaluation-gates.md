@@ -314,10 +314,10 @@ Mỗi con số kèm một câu lý do, lấy từ `data/world.json` → `ops_lim
 
 | Khoá | Giá trị bàn đặt | Lý do (một câu, có số) |
 |---|---|---|
-| `business.daily_refund_cap_vnd` | | |
-| `business.cost_budget_per_ticket_vnd` | | |
-| `business.pilot_scope` (all / warehouse / percent) | | |
-| `business.roi_min` | | |
+| `business.daily_refund_cap_vnd` | `2000000` | Bằng đúng `ops_limits.daily_auto_refund_budget_vnd` = 2.000.000đ mà Ops và Finance đã thống nhất (dòng pre-mortem Kinh doanh ở B6). Ngày tệ nhất ở bộ nền chỉ hoàn tự động 155.000đ, nên ngày cao điểm gấp ba (khoảng 465.000đ) vẫn còn dư địa. Trần chỉ chặn ngày bão hoặc sale bất thường: khoản làm vượt trần không tự ghi mà chuyển chị Hạnh (NV-HANH) duyệt |
+| `business.cost_budget_per_ticket_vnd` | `1500` | Bằng `ops_limits.max_llm_cost_per_ticket_vnd` = 1.500đ. Ticket tốn tiền LLM nhiều nhất ở bộ nền là 670đ, nên trần này không chặn nhầm ca đang đúng. Nó chỉ cắt ticket dài bất thường (dán cả đoạn chat, cài chữ lệnh), vì tiền LLM tính theo độ dài chữ (`ops_facts.llm_cost.extract_per_4_chars_vnd` = 1đ) |
+| `business.pilot_scope` (all / warehouse / percent) | `{"mode": "warehouse", "warehouses": ["HN", "CT"]}` | Hai kho có số tốt nhất ở khối "theo kho và hãng" của mốc base `R-base-before-20261119-161158-bde05c`: CT 590đ/ticket, HN 1.993đ/ticket, cả hai pass_rate 1,0, không hoàn sai. HCM là nơi có ca hỏng `T-002@55` (hoàn sai 20.000đ, 1 lỗi oan cho VNX). DN tốn 4.586đ/ticket. `HCM-B2B` (đơn sỉ từ 2 triệu) không đưa vào pilot. Chạy thử `R-base-after-20261119-164219-370407`: 12/22 ticket mỗi ngày trong phạm vi (độ phủ 54,55%), pass_rate 1,0, chi phí 4.723đ/ticket, ROI 1,12. Phần còn lại vẫn làm tay như hiện nay |
+| `business.roi_min` | `0.3` | Khớp ngưỡng `business_ops.roi_min` = 0,3 đã ký trong Bản tiêu chí. Mỗi ca chuyển người tốn 10.000đ, bằng làm tay (`ops_facts.review_cost_per_ticket_vnd`), nên ROI sẽ tụt khi tỉ lệ chuyển người tăng (ví dụ từ 01/12 hạn mức tự động REFUND-v4 giảm còn 100.000đ). ROI hiện là 1,12 với phạm vi HN + CT, 1,34 với cả bộ nền, nên vẫn còn dư địa. Dưới 0,3 thì report báo "vượt trần" và bàn xét Thu hẹp hoặc Dừng theo `decision_rule` |
 
 ### B7.5 · Câu 2.10 · Cổng con người, vận hành, pháp lý + Runbook phần 1–3
 
