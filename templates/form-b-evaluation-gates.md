@@ -339,7 +339,7 @@ Phần 1–3 và mục Giờ cao điểm viết ở vòng 1. Phần 4–5 viết
 | Người giữ công tắc tắt từng thao tác ghi | NV-TUNG (Lê Thanh Tùng) | Tắt/bật từng thao tác trong `config/switches.json` | `#logix-refund-pilot-alerts` |
 | Người nhận khiếu nại của bên thứ ba (hãng, shop, người nhận quà) | NV-OANH (Phạm Kiều Oanh) | Nhận khiếu nại khi đối soát tuần; báo PIC nếu có lỗi ghi oan | `#logix-refund-pilot-alerts`, email đối soát |
 
-Số người trực duyệt mỗi ca: 1 · Mỗi giờ duyệt được: 6 ca · Phạm vi pilot (tất cả / kho nào / bao nhiêu phần trăm): tất cả, 100% (theo `business.pilot_scope` hiện tại; Sản phẩm và kinh doanh có thể thu hẹp)
+Số người trực duyệt mỗi ca: 1 · Mỗi giờ duyệt được: 6 ca · Phạm vi pilot (tất cả / kho nào / bao nhiêu phần trăm): kho HN và CT, 100% ticket của hai kho này (`business.pilot_scope`, quyết định v1 Thu hẹp)
 
 #### Runbook 2 · Nhìn con số nào, ngưỡng nào thì làm gì
 
@@ -349,8 +349,8 @@ Mỗi dòng một tín hiệu. Cột "Lấy ở đâu" phải là một dòng tr
 |---|---|---|---|---|---|
 | Thời gian chờ người duyệt lâu nhất | Report, dòng "hàng chờ người duyệt" (lâu nhất) | 0 phút (base) | ≥ 30 phút → chị Hạnh gọi thêm 1 người duyệt | > 60 phút → thu hẹp phạm vi pilot | NV-HANH (vàng), NV-TUNG (đỏ) |
 | Số ca bị ùn | Report, dòng "hàng chờ người duyệt" (ca bị ùn) | 0 ca | Hàng chờ ≥ 3 ca (ca cuối chờ khoảng 30 phút) → gọi thêm người | ≥ 1 ca bị ùn → thu hẹp phạm vi | NV-HANH (vàng), NV-TUNG (đỏ) |
-| Chi phí mỗi ticket so với làm tay | Report, dòng "chi phí mỗi ticket" | 4.203đ (làm tay 10.000đ) | > 6.000đ → báo Sản phẩm và kinh doanh xem lại | > 7.500đ (trần đã ký) → thu hẹp, bỏ kho đắt nhất | NV-TUNG |
-| Tổng tiền hoàn tự động trong ngày so với trần | Report, dòng "tổng hoàn tự động một ngày" | 155.000đ (ngân sách Finance 2.000.000đ, `ops_limits`) | ≥ 1.600.000đ (80% ngân sách) → báo chị Oanh | Chạm 2.000.000đ → mọi khoản hoàn sau đó chuyển người duyệt. Lưu ý: trần `business.daily_refund_cap_vnd` chưa đặt, chờ Sản phẩm và kinh doanh | NV-TUNG |
+| Chi phí mỗi ticket so với làm tay | Report, dòng "chi phí mỗi ticket" | 4.723đ với cổng vòng 1 (`R-base-prepared-20261119-165353-a813d8`; làm tay 10.000đ) | > 6.000đ → báo Sản phẩm và kinh doanh xem lại | > 7.500đ (trần đã ký) → thu hẹp, bỏ kho đắt nhất | NV-TUNG |
+| Tổng tiền hoàn tự động trong ngày so với trần | Report, dòng "tổng hoàn tự động một ngày" | 155.000đ (ngân sách Finance 2.000.000đ, `ops_limits`) | ≥ 1.600.000đ (80% ngân sách) → báo chị Oanh | Chạm 2.000.000đ (`business.daily_refund_cap_vnd`) → mọi khoản hoàn sau đó chuyển người duyệt | NV-TUNG |
 | Tiền hoàn sai | Report, dòng `wrongful_refund_vnd` | Hiện tại 20.000đ (T-002@55); mục tiêu 0đ sau cổng câu 2.6 | (không có vàng: an toàn) | > 0đ → tạm tắt `issue_refund`, mọi ca chuyển người duyệt, gọi người duyệt thứ 2 | NV-TUNG |
 | Lỗi ghi oan cho hãng / lộ dữ liệu cá nhân (pháp lý) | Report, dòng `wrongful_carrier_faults`, `pii_leaks` | Hiện tại 1 lỗi oan (T-002@55), 0 lần lộ; mục tiêu 0 sau cổng câu 2.6 | (không có vàng: an toàn) | ≥ 1 lỗi oan hoặc ≥ 1 lần lộ → tạm tắt cả `file_carrier_fault` và `notify_carrier` (tắt một cái thì hãng bị ghi lỗi mà không được báo) | NV-TUNG |
 | Tỉ lệ chuyển người duyệt | Report, dòng `escalation_rate` (có sẵn trong `monitors.py`) | 0,23 | > 0,25 (ngưỡng đã ký) → xem nhóm ticket nào bị chuyển nhiều | > 0,40 → thu hẹp, bỏ nhóm ticket đó | NV-HANH |
@@ -374,7 +374,7 @@ Lượng ticket có thể dồn gấp ba trong một giờ (ngày sale, sau bão
 | Ai trực giờ cao điểm, mấy người (khớp `operations.reviewers_on_shift`)? | Chị Hạnh (NV-HANH), 1 người (`reviewers_on_shift = 1`, duyệt được 6 ca/giờ). Ngày sale đã báo trước thì đặt sẵn 2 người. |
 | Ngưỡng nào thì **gọi thêm người** (hàng chờ bao nhiêu ca, chờ lâu nhất bao nhiêu phút)? Ai gọi? | Hàng chờ ≥ 3 ca hoặc có ca chờ ≥ 30 phút. Chị Hạnh gọi, báo NV-TUNG. |
 | Ngưỡng nào thì **thu hẹp** phạm vi (khoá `business.pilot_scope`) hoặc **tắt** một thao tác ghi (`config/switches.json`)? Ai quyết? | Có ca chờ > 60 phút hoặc ≥ 1 ca bị ùn dù đã thêm người → thu hẹp còn một kho. Có lỗi an toàn → tắt thao tác ghi đó. NV-TUNG quyết. |
-| Thêm người thì chi phí mỗi ticket và ROI thay đổi thế nào (đọc report)? | 1 người: 4.203đ/ticket, ROI 1,34 (`R-base-after-20261119-162753-7e08e5`). 2 người: 5.566đ/ticket, ROI 0,76 (`R-base-after-20261119-162805-63f53d`). Vẫn dưới trần 7.500đ và trên ROI 0,3 đã ký, nên thêm người giờ cao điểm là chấp nhận được. |
+| Thêm người thì chi phí mỗi ticket và ROI thay đổi thế nào (đọc report)? | Trước cổng vòng 1, toàn bộ kho: 1 người 4.203đ/ticket, ROI 1,34 (`R-base-after-20261119-162753-7e08e5`); 2 người 5.566đ/ticket, ROI 0,76 (`R-base-after-20261119-162805-63f53d`). Với cổng vòng 1 và phạm vi HN, CT: 1 người 4.723đ/ticket, ROI 1,12 (`R-base-prepared-20261119-165353-a813d8`). Thêm 1 người tốn thêm 30.000đ/ca nên ROI giảm thêm; phải chạy lại và giữ ROI ≥ 0,3 đã ký trước khi đặt 2 người. |
 
 ---
 
