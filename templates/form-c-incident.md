@@ -268,7 +268,7 @@ Vì sao có thể sai: Ngoài thực tế tài xế quét sót (hết pin, mất
 
 <a id="c6"></a>
 
-## C6 · Câu 3.4 · Fault tree TRƯỚC khi sửa (mã lần chạy: `__________`)
+## C6 · Câu 3.4 · Fault tree TRƯỚC khi sửa (mã lần chạy: `R-S1-grade-20261119-174024-a813d8`)
 
 **Khung tư duy.** Đi từ **tác hại** ngược về nguyên nhân, không đi từ lỗi mình tình cờ thấy. Mỗi tầng hỏi "điều gì phải xảy
 ra thì điều trên mới xảy ra", nối bằng **HOẶC** (một trong các nhánh là đủ) hoặc **VÀ** (phải đồng thời). Một biện pháp tốt
@@ -283,21 +283,27 @@ thường biến một nhánh HOẶC thành VÀ: tác hại chỉ còn xảy ra 
 Ít nhất hai nhánh ở hai tầng khác nhau (kỹ thuật, kinh doanh, con người); mỗi lá có bằng chứng (ticket@seed, trường dữ liệu, hoặc một dòng của report).
 
 ```
-[ĐỈNH] Tác hại: ______________________________ (cho ai: __________, đo bằng: __________)
+[ĐỈNH] GHSH bị ghi lỗi/phạt oan; từ 3 lỗi oan trong 7 ngày có thể bị đình tuyến
+ (bên chịu: GHSH và 12 tài xế; đo bằng wrongful_carrier_faults, tiền phạt 150.000đ/lỗi,
+  ngưỡng đình chỉ 3 lỗi/7 ngày)
  └─ HOẶC
- ├─ [1] ______________________________ tầng: đầu vào / data / hành động / quyền hạn / vận hành / kinh doanh
- │ └─ vì: ________________________ bằng chứng: ticket ______@seed ____
- ├─ [2] ______________________________ tầng: ______
- │ └─ vì: ________________________ bằng chứng: ticket ______@seed ____
- └─ [3] ______________________________ tầng: ______
- └─ vì: ________________________ bằng chứng: ______
+    ├─ [1] Một lệnh ghi lỗi oan được ghi vào sổ (tầng: đầu vào / hành động)
+    │  └─ HOẶC
+    │     ├─ Số ngày khách tự khai đè lên tracking (S1-01@11, S1-03@11)
+    │     └─ delivered_date thiếu dù status=DELIVERED, nên hệ thống đếm trễ tới ngày chạy
+    │        (S1-20@11; db_delay_days=6)
+    └─ [2] GHSH tích lũy ≥3 lỗi oan và bị đình tuyến (tầng: vận hành / quyền hạn)
+       └─ VÀ
+          ├─ Các lệnh ghi lỗi oan ở nhánh [1] tiếp tục được tự động ghi
+          └─ Không đếm tổng lỗi theo hãng/ngày và không chuyển người duyệt từ lỗi thứ 3
+             (S1-40…S1-43 cùng ngày; S1-42@11 là lỗi thứ 3+; giới hạn Ops=2/ngày)
 ```
 
 | Lá | Specification bị vi phạm (phần mềm phải làm gì) | Giả định môi trường đã sai (thế giới ngoài phần mềm) |
 |---|---|---|
-| [1] | | |
-| [2] | | |
-| [3] | | |
+| [1] Khách tự khai đè tracking | `delay_days` dùng cho `file_carrier_fault` phải lấy từ tracking; không dùng số khách khai. Trace: S1-01@11 (DB 2, ticket 5); S1-03@11 (DB 4, ticket 9). | Khách luôn nhớ/chỉ đúng số ngày trễ; thực tế lời khai có thể khác tracking. |
+| [2] Thiếu ngày giao trong tracking | Nếu `status=DELIVERED` nhưng `delivered_date` trống, không được suy ra kiện còn đang giao rồi tự động hoàn/ghi lỗi; phải chuyển người xác minh. Trace: S1-20@11, O-2120 (`delivered_date=null`, `db_delay_days=6`). | Tracking luôn điền `delivered_date` đầy đủ và nhất quán với `status`; O-2120/O-2121 cho thấy giả định này sai. |
+| [3] Lỗi dồn vượt ngưỡng đình chỉ | Trước khi ghi lỗi hãng phải kiểm tra số lỗi tự động của hãng trong ngày; từ lỗi thứ 3 phải chuyển người duyệt. Bằng chứng: `ops_limits.max_auto_strikes_per_carrier_per_day=2`; S1-40…S1-43 cùng ngày và S1-42@11. | Các lệnh ghi lỗi đơn lẻ hoặc đối soát hàng tuần đủ để phát hiện và chặn lỗi trước khi đạt ngưỡng 3/7 ngày; thực tế GHSH bị ghi lỗi dồn dập trong ngày mà không ai duyệt. |
 
 **Ví dụ mẫu một nhánh (bộ nền, đừng chép):** đỉnh "hãng VNX nhận lỗi oan cho đơn O-1002" ← [1] agent dùng độ trễ 5 ngày ←
 model lấy số trong ticket đè lên DB (`T-002@55`). Spec bị vi phạm: độ trễ dùng để ghi lỗi phải lấy từ tracking DB. Giả định
