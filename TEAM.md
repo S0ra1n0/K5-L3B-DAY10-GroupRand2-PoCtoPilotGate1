@@ -13,7 +13,7 @@ Họ tên đầy đủ và MSSV của **mọi** thành viên; bàn 3 người th
 
 | STT | Họ và tên | MSSV | Vai | Trưởng nhóm |
 | --: | --------- | ---- | --- | :---------: |
-|   1 |           |      |     |             |
+|   1 | Nguyễn Lê Đăng Khoa | 2A202603847 | Kỹ sư cổng |        x     |
 |   2 |           |      |     |             |
 |   3 |  Nguyễn Minh Quang   |  2A202603791    | Kỹ sư cổng    |             |
 |   4 |           |      |     |             |
@@ -41,6 +41,33 @@ Mã commit, mã lần chạy (`runs/<mã>`), dòng trong phiếu.
 ### Exit ticket
 
 Một điều học được, một điều còn chưa chắc.
+
+## NguyenLeDangKhoa-2A202603847
+
+### Phần việc phụ trách
+
+- **Vai:** Kỹ sư cổng (Gate Engineer), trưởng nhóm.
+- **File/mục phụ trách chính:** vòng 1 `lab10/guards.py`; Phiếu B mục B7.1–B7.3 (câu 2.6–2.8); Phiếu C mục C6 (câu 3.4); tham gia chốt quyết định v1 tại Phiếu B mục B8.
+- **Phạm vi đóng góp:** dựng phiên bản cổng phòng ngừa ban đầu và behavioral tickets; phân tích fault tree trước khi sửa cho thẻ S1. Các thay đổi code/monitor vòng 2 trong commit `dc150e9` do Nguyễn Minh Quang thực hiện.
+
+### Đóng góp cụ thể
+
+- Xây dựng bản cổng phòng ngừa đầu tiên cho các thao tác ghi: ghim chính sách hiệu lực, đối chiếu hoàn tiền với tracking, xác minh ghi lỗi hãng và giới hạn trường thông báo cho hãng.
+- Hoàn thiện Phiếu B mục B7.1–B7.3: mô tả các cổng, ghi hai bước tránh rò rỉ dữ liệu khi chỉnh trên bộ chấm, và thiết kế hai ticket hiểm để kiểm tra lời khai ngày trễ so với tracking cùng dữ liệu người nhận quà gửi cho hãng.
+- Lập fault tree trước sửa cho S1 ở Phiếu C mục C6: phân tích ba nhánh gồm khách khai đè tracking, tracking thiếu `delivered_date` dù kiện đã giao, và lỗi của GHSH dồn vượt giới hạn vận hành.
+- Cùng bàn so sánh bằng chứng của mốc prepared với tiêu chí đã ký và chốt quyết định v1 là **Thu hẹp**, giới hạn pilot ở HN/CT và để ca không xác định được kho/đơn đi theo quy trình làm tay.
+- **Sử dụng AI:** có dùng Copilot hỗ trợ đọc trace, soạn nội dung và phác thảo cổng. Commit ban đầu có thêm test vào `tests/test_public.py`; sau đó file test đã được khôi phục về bản gốc và không nằm trong thay đổi cuối cùng.
+
+### Bằng chứng
+
+- **Commit:** `bd26298` (câu 2.6–2.8); `713287a` (fault tree câu 3.4); `f2b57ec` (chốt v1).
+- **Mã lần chạy:** baseline `R-base-before-20261119-161158-bde05c`; mốc prepared S1 `R-S1-prepared-20261119-171919-159538`. Bản tự kiểm tra sau đó ghi `R-S1-grade-20261119-195313-a25689`; phần code vòng 2 và monitor thuộc đóng góp của Quang.
+- **Vị trí:** Phiếu B mục B7.1–B7.3 và B8; Phiếu C mục C6.
+
+### Exit ticket
+
+- **Một điều học được:** cổng trước thao tác ghi cần đối chiếu với nguồn dữ liệu có thẩm quyền và giới hạn quyền của agent; chỉ nhìn câu trả lời của model không đủ để bảo vệ khách hàng và đối tác.
+- **Một điều còn chưa chắc:** nếu tracking thiếu hoặc sai ngày giao, cần cơ chế đối soát với hãng và quy trình cập nhật dữ liệu nào để vừa tránh ghi lỗi oan vừa không từ chối các khoản hoàn hợp lệ?
 
 ## NguyenMinhQuang-2A202603791
 
